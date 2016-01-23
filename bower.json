@@ -2,14 +2,15 @@
   "name": "orgasmic-login",
   "version": "1.0.0",
   "authors": [
-    "Anonymous <anonymous@example.com>"
+    "Cj Diamond <mrcjdiamond@gmail.com>"
   ],
-  "description": "An element providing a solution to no problem in particular.",
+  "description": "A login form based on the material design specification.",
   "keywords": [
     "web-component",
     "web-components",
     "polymer",
-    "seed"
+    "login",
+    "orgasmic-login"
   ],
   "main": "orgasmic-login.html",
   "license": "http://polymer.github.io/LICENSE.txt",
