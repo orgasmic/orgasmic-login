@@ -1,0 +1,273 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<!-- <link rel="import" href="../neon-animation/neon-animation.html"> -->
+
+
+<!--
+A login form based on the material design specification.
+
+Example:
+
+    <orgasmic-login on-login="handleLogin" credentials="{{_user}}">
+      <img avatar src="https://randomuser.me/api/portraits/med/women/27.jpg"/>
+    </orgasmic-login>
+
+@demo
+-->
+<dom-module id="orgasmic-login">
+  <style>
+    :host {
+      display: block;
+      box-sizing: border-box;
+      text-align: center;
+      margin: 5px;
+      max-width: 250px;
+      min-width: 200px;
+    }
+
+    :host > h3 {
+      margin-top: 5px;
+    }
+
+    :host ::content img {
+      border-radius: 50%;
+    }
+
+    :host paper-input{
+      margin-left: auto;
+      margin-right: auto;
+      width: 90%;
+    }
+
+    :host paper-material{
+      padding: 15px;
+    }
+
+    #submitbutton {
+      margin-top: 10px;
+      width: 90%;
+      background: #4285f4;
+      color: white;
+    }
+  </style>
+
+  <template>
+  
+    <paper-material elevation="[[elevation]]">
+      <h3>[[heading]]</h3>
+
+      <content></content>
+
+      <form is="iron-form" id="form">
+        <paper-input id="identity" 
+          type="text"
+          label="[[identityInputLabel]]"
+          value="{{identity}}" 
+          auto-validate pattern="[[identityValidationPattern]]"
+          error-message="[[identityErrorMessage]]">
+        </paper-input>
+
+        <paper-input id="password" 
+          type="password" 
+          label="[[passwordInputLabel]]" 
+          value="{{password}}"
+          auto-validate pattern="[[passwordValidationPattern]]"
+          error-message="[[passwordErrorMessage]]">
+        </paper-input>
+
+        <paper-button 
+          id="submitbutton" 
+          raised 
+          on-click="validate">[[submit]]</paper-button>
+      </form>
+    </paper-material>
+
+  </template>
+
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'orgasmic-login',
+
+    properties: {
+      /**
+       * Paper material elevation
+       * @type {number}
+       * @default 3
+       */
+      elevation: {
+        type: Number,
+        value: 3
+      },
+
+      /**
+       * Label for the heading
+       * @type {string}
+       * @default Login
+       */
+      heading: {
+        type: String,
+        value: 'Login'
+      },
+
+      /**
+       * Label for the submit button
+       * @type {string}
+       * @default Submit
+       */
+      submit: {
+        type: String,
+        value: 'Submit'
+      },
+
+      /**
+       * Label for the identity input.
+       * @type {string}
+       */
+      identityInputLabel: {
+        type: String,
+        value: 'Username'
+      },
+
+      /**
+       * Label for the password input.
+       * @type {string}
+       */
+      passwordInputLabel: {
+        type: String,
+        value: 'Password'
+      },
+
+      /**
+       * Pattern used to validate username.
+       * @type {string}
+       */
+      identityValidationPattern: {
+        type: String,
+        value: '^[a-zA-Z0-9]+$'
+      },
+
+      /**
+       * Pattern used to validate password.
+       * @type {string}
+       */
+      passwordValidationPattern: {
+        type: String,
+        value: '^[a-zA-Z0-9]+$'
+      },
+
+      /**
+       * Error message displayed if `identityValidationPattern` is not matched.
+       * @type {string}
+       */
+      identityErrorMessage: {
+        type: String,
+        value: 'letters and numbers only'
+      },
+
+      /**
+       * Error message displayed if `passwordValidationPattern` is not matched.
+       * @type {string}
+       */
+      passwordErrorMessage: {
+        type: String,
+        value: 'letters and numbers only'
+      },
+
+      /**
+       * Username submitted.
+       * @type {string}
+       */
+      identity: {
+        type: String
+      },
+
+      /**
+       * Password submitted.
+       * @type {string}
+       */
+      password: {
+        type: String
+      },
+
+      /**
+       * User credentials stringified.
+       * @type {{username: string, password: string}}
+       */
+      credentials: {
+        type: Object,
+        notify: true,
+        computed: '_computeCredentials(identity, password)'
+      }
+    },
+
+    // Element Lifecycle
+    ////////////////////////////////////////////
+    ready: function() {},
+
+    attached: function() {},
+
+    detached: function() {},
+
+    // Element Methods
+    ////////////////////////////////////////////
+    /**
+     * Compute the user credentials
+     * @param  {string} username
+     * @param  {string} password
+     * @return {{username: string, password: string}} Hash representing user credentials
+     */
+    _computeCredentials: function(identity, password) {
+      // TODO: Check if identity is an email or username
+      return {
+        username: identity,
+        password: password
+      };
+    },
+
+    /**
+     * Validate the login form.
+     * @param  {Object} e MouseEvent
+     * @return {boolean}   Form validity
+     */
+    validate: function(e) {
+      if (this.$.form.checkValidity() && this.identity && this.password){
+        this.fireLogin();
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    /**
+     * Trigger the `login` event with the user credentials as paramters.
+     */
+    fireLogin: function() {
+      /**
+       * The `login` event is fired whenever `fireLogin` is called.
+       *
+       * @event login
+       * @detail {{username: string, password: string}}
+       */
+      this.fire('login', {
+        username: this.identity,
+        password: this.password
+      });
+    }
+  });
+</script>
